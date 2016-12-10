@@ -2,7 +2,9 @@
 
 [![Build Status](https://travis-ci.org/scala-native/sbt-cross.svg?branch=master)](https://travis-ci.org/scala-native/sbt-cross)
 
-Cross-platform compilation support for sbt.
+<h2>Cross-platform compilation support for sbt.</h2>
+
+It is often desirable to compile the same source code with Scala.js, Scala JVM or Scala-Native. The globally available method `crossProject(Platform*)` creates a Builder for your cross-compiled project. You have to manually instanciate one sbt project per Platform. You can find the following [example on GitHub](https://github.com/scala-native/sbt-cross-example) and many more examples in the [scripted test folder](https://github.com/scala-native/sbt-cross/tree/master/sbt-cross-test/src/sbt-test).
 
 <h2>Installation</h2>
 
@@ -30,7 +32,6 @@ val sharedSettings = Seq(scalaVersion := "2.11.8") // Scala Native only supports
 lazy val bar =
   // (6) select supported platforms
   crossProject(JSPlatform, JVMPlatform, NativePlatform)
-    .crossType(CrossType.Pure) // [Pure, Full, Dummy], default: CrossType.Full
     .settings(sharedSettings)
     .jsSettings(/* ... */) // defined in sbt-scalajs-cross
     .jvmSettings(/* ... */)
@@ -40,17 +41,6 @@ lazy val bar =
 lazy val barJS     = bar.js
 lazy val barJVM    = bar.jvm
 lazy val barNative = bar.native
-
-lazy val foo =
-  crossProject(JSPlatform, JVMPlatform, NativePlatform)
-    .settings(
-      // %%% now include Scala Native. It applies to all selected platforms
-      libraryDependencies += "org.example" %%% "foo" % "1.2.3"
-    )
-
-lazy val fooJS = foo.js
-lazy val fooJVM = foo.jvm
-lazy val fooNative = foo.native
 ```
 
 <h3>Cross-Compiling JVM and Native</h3>
@@ -112,3 +102,31 @@ lazy val bar =
 lazy val barJS = bar.js
 lazy val barJVM = bar.jvm
 ```
+
+<h2>Directory Structure: [[sbtcross.CrossType]]</h2>
+
+<h3>[[sbtcross.CrossType.Full]] (Default)</h3>
+<pre>
+.
+├── js
+├── jvm
+├── native
+└── shared
+</pre>
+
+<h3>[[sbtcross.CrossType.Pure]]</h3>
+<pre>
+.
+├── .js
+├── .jvm
+├── .native
+└── src
+</pre>
+
+<h3>[[sbtcross.CrossType.Dummy]]</h3>
+<pre>
+.
+├── js
+├── jvm
+└── native
+</pre>
